@@ -14,7 +14,7 @@ class LittleRPC
 {
 
 public:
-    typedef void (*LittleRPCSendBufferCallback)(uint8_t *buff, size_t len);
+    typedef void (*LittleRPCSendBufferCallback)(uint8_t *buff, size_t len, void *usedData);
 
     typedef enum
     {
@@ -45,13 +45,15 @@ public:
     } RPCInvokeRet_t;
 
 public:
-    LittleRPC(LittleRPCSendBufferCallback sendBufferCallback = nullptr);
+    LittleRPC(LittleRPCSendBufferCallback sendBufferCallback = nullptr,
+              void *sendBufferCallbackUserData = nullptr);
     ~LittleRPC();
 
     size_t onRecv(uint8_t *buff, size_t len);
     void sendBuffer(uint8_t *buff, size_t len);
 
-    void setSendBufferCallback(LittleRPCSendBufferCallback sendBufferCallback);
+    void setSendBufferCallback(LittleRPCSendBufferCallback sendBufferCallback,
+                               void *sendBufferCallbackUserData);
 
     /* RPC Server Side*/
     void registService(LittleRPCServiceID serviceID, ProtobufCService *service);
@@ -75,6 +77,7 @@ private:
     uint8_t *recvBuffer;
     size_t recvBufferAvailableSize;
 
+    void *sendBufferCallbackUserData;
     LittleRPCSendBufferCallback sendBufferCallback;
 
     // RPC Server Side

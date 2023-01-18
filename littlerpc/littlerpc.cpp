@@ -9,25 +9,26 @@ static void *little_rpc_alloc(void *allocator_data, size_t size);
 static void little_rpc_free(void *allocator_data, void *pointer);
 static void serviceClosure(const ProtobufCMessage *msg, void *closure_data);
 
-LittleRPC::LittleRPC(LittleRPCSendBufferCallback sendBufferCallback)
+LittleRPC::LittleRPC(LittleRPCSendBufferCallback sendBufferCallback,
+                     void *sendBufferCallbackUserData)
 {
     this->pbcAllocator.alloc = little_rpc_alloc;
     this->pbcAllocator.free = little_rpc_free;
     this->pbcAllocator.allocator_data = this;
 
-    this->sendBufferCallback = sendBufferCallback;
     this->recvBufferAvailableSize = 0;
     this->recvBuffer = (uint8_t *)LITTLE_RPC_ALLOC(LITTLE_RPC_CACHE_SIZE);
+
+    this->setSendBufferCallback(sendBufferCallback, sendBufferCallbackUserData);
 }
 
-LittleRPC::~LittleRPC()
-{
-    LITTLE_RPC_FREE(this->recvBuffer);
-}
+LittleRPC::~LittleRPC() { LITTLE_RPC_FREE(this->recvBuffer); }
 
-void LittleRPC::setSendBufferCallback(LittleRPCSendBufferCallback sendBufferCallback)
+void LittleRPC::setSendBufferCallback(LittleRPCSendBufferCallback sendBufferCallback,
+                                      void *sendBufferCallbackUserData = nullptr)
 {
     this->sendBufferCallback = sendBufferCallback;
+    this->sendBufferCallbackUserData = sendBufferCallbackUserData;
 }
 
 
@@ -40,7 +41,7 @@ void LittleRPC::sendBuffer(uint8_t *buff, size_t len)
 {
     if (this->sendBufferCallback != nullptr)
     {
-        this->sendBufferCallback(buff, len);
+        this->sendBufferCallback(buff, len, this->sendBufferCallbackUserData);
     }
 }
 
@@ -65,7 +66,7 @@ void LittleRPC::processBuffer(void)
                           header->contentBufferLen);
     }
     LITTLE_RPC_MEMCPY(this->recvBuffer, this->recvBuffer + packageLen,
-           this->recvBufferAvailableSize - packageLen);
+                      this->recvBufferAvailableSize - packageLen);
     this->recvBufferAvailableSize -= packageLen;
 }
 
@@ -147,8 +148,8 @@ LittleRPC::RPCInvokeRet_t LittleRPC::RpcInvoke(LittleRPCServiceID serviceID,
         .contentBufferLen = bodySize,
     };
 
-    if (closure != nullptr &&
-        this->seqCallbackManager.pushSeqCallback(header.seq, service, closure, closure_data) == false)
+    if (closure != nullptr && this->seqCallbackManager.pushSeqCallback(header.seq, service, closure,
+                                                                       closure_data) == false)
     {
         LITTLE_RPC_FREE(bodyBuffer);
         return INVOKE_TOO_MANY_PEDDING_RPC;
@@ -179,7 +180,7 @@ void serviceClosure(const ProtobufCMessage *msg, void *closure_data)
     LITTLE_RPC_FREE(buff);
 }
 
-int getServiveMethodIndex(const ProtobufCService *service, const char * methodName)
+int getServiveMethodIndex(const ProtobufCService *service, const char *methodName)
 {
     for (int i = 0; i < service->descriptor->n_methods; i++)
     {

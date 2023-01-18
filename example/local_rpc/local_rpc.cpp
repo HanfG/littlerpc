@@ -24,15 +24,15 @@ static TestService1_Service testService1 = TEST_SERVICE1__INIT(service1__);
 static TestService2_Service testService2 = TEST_SERVICE2__INIT(service2__);
 
 
-static void sendToRpc1(uint8_t *buff, size_t len) { rpc1.onRecv(buff, len); }
+static void sendToRpc1(uint8_t *buff, size_t len, void *userData) { rpc1.onRecv(buff, len); }
 
-static void sendToRpc2(uint8_t *buff, size_t len) { rpc2.onRecv(buff, len); }
+static void sendToRpc2(uint8_t *buff, size_t len, void *userData) { rpc2.onRecv(buff, len); }
 
 
 int main(void)
 {
-    rpc1.setSendBufferCallback(sendToRpc2);
-    rpc2.setSendBufferCallback(sendToRpc1);
+    rpc1.setSendBufferCallback(sendToRpc2, nullptr);
+    rpc2.setSendBufferCallback(sendToRpc1, nullptr);
 
     rpc1.registService(LRPC_SERVICE_ID_TEST_SERVICE_1, &testService1.base);
     rpc2.registService(LRPC_SERVICE_ID_TEST_SERVICE_2, &testService2.base);
@@ -57,8 +57,8 @@ int main(void)
     req2.msg = c_chr;
     req2.x = 19901;
 
-    rpc2.RpcInvoke(LRPC_SERVICE_ID_TEST_SERVICE_1, &testService1.base, "testMethod1", (ProtobufCMessage *)&req2,
-                   service2__test_method2_on_return, nullptr);
+    rpc2.RpcInvoke(LRPC_SERVICE_ID_TEST_SERVICE_1, &testService1.base, "testMethod1",
+                   (ProtobufCMessage *)&req2, service2__test_method2_on_return, nullptr);
 }
 
 void service1__test_method1_on_return(const ProtobufCMessage *msg, void *closure_data)
