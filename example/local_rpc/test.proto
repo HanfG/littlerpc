@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+message TestReq
+{
+    string msg = 1;
+    uint32 x = 2;
+}
+
+message TestRsp
+{
+    uint32 retCode = 1;
+}
+
+service TestService1
+{
+    rpc testMethod1(TestReq) returns (TestRsp);
+}
+
+service TestService2
+{
+    rpc testMethod2(TestReq) returns (TestRsp);
+}

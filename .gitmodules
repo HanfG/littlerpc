@@ -1,0 +1,3 @@
+[submodule "extension/protobuf-c"]
+	path = extension/protobuf-c
+	url = https://github.com/protobuf-c/protobuf-c.git
