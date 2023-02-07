@@ -1,20 +1,18 @@
 #include "littlerpc_pbc_service_manager.h"
 
-#include <string.h>
-
 #define SERIVER_LIST_INIT_SIZE     8
 #define SERIVER_LIST_INCREASE_STEP 4
 
 LittleRPCProtobufCServicerManager::LittleRPCProtobufCServicerManager()
 {
-    this->services = nullptr;
+    this->services = LITTLE_RPC_NULLPTR;
     this->servicesNum = 0;
     this->servicesSize = 0;
 }
 
 LittleRPCProtobufCServicerManager::~LittleRPCProtobufCServicerManager()
 {
-    if (this->services != nullptr)
+    if (this->services != LITTLE_RPC_NULLPTR)
         LITTLE_RPC_FREE(this->services);
 }
 
@@ -23,7 +21,7 @@ void LittleRPCProtobufCServicerManager::registService(LittleRPCServiceID service
                                                       ProtobufCService *service)
 {
 
-    if (this->findServiceByID(serviceID) != nullptr)
+    if (this->findServiceByID(serviceID) != LITTLE_RPC_NULLPTR)
     {
         return;  // TODO return err
     }
@@ -55,7 +53,7 @@ ProtobufCService *LittleRPCProtobufCServicerManager::findServiceByID(LittleRPCSe
 {
     int idx = this->getServiceIDIndex(serviceID);
     if (idx < 0)
-        return nullptr;
+        return LITTLE_RPC_NULLPTR;
     return this->services[idx].service;
 }
 

@@ -41,7 +41,7 @@ bool LittleRPCSeqCallbackManager::popSeqCallbackBySeq(LittleRPCSequence seq,
     return true;
 }
 bool LittleRPCSeqCallbackManager::pushSeqCallback(LittleRPCSequence seq,
-                                                  const ProtobufCService *service,
+                                                  const ProtobufCServiceDescriptor *serviceDescriptor,
                                                   ProtobufCClosure closure, void *closure_data)
 {
     if (this->seqCallbacksAvailableLen >= LITTLE_RPC_PENDDING_RPC_NUM)
@@ -49,7 +49,7 @@ bool LittleRPCSeqCallbackManager::pushSeqCallback(LittleRPCSequence seq,
         return false;
     }
     this->seqCallbacks[this->seqCallbacksAvailableLen].seq = seq;
-    this->seqCallbacks[this->seqCallbacksAvailableLen].service = service;
+    this->seqCallbacks[this->seqCallbacksAvailableLen].serviceDescriptor = serviceDescriptor;
     this->seqCallbacks[this->seqCallbacksAvailableLen].closure = closure;
     this->seqCallbacks[this->seqCallbacksAvailableLen].closure_data = closure_data;
     this->seqCallbacksAvailableLen++;

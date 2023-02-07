@@ -31,8 +31,8 @@ static void sendToRpc2(uint8_t *buff, size_t len, void *userData) { rpc2.onRecv(
 
 int main(void)
 {
-    rpc1.setSendBufferCallback(sendToRpc2, nullptr);
-    rpc2.setSendBufferCallback(sendToRpc1, nullptr);
+    rpc1.setSendBufferCallback(sendToRpc2, LITTLE_RPC_NULLPTR);
+    rpc2.setSendBufferCallback(sendToRpc1, LITTLE_RPC_NULLPTR);
 
     rpc1.registService(LRPC_SERVICE_ID_TEST_SERVICE_1, &testService1.base);
     rpc2.registService(LRPC_SERVICE_ID_TEST_SERVICE_2, &testService2.base);
@@ -49,7 +49,7 @@ int main(void)
     {
         req.x = i;
         ret = rpc1.RpcInvoke(LRPC_SERVICE_ID_TEST_SERVICE_2, &testService2.base, "testMethod2",
-                             (ProtobufCMessage *)&req, service1__test_method1_on_return, nullptr);
+                             (ProtobufCMessage *)&req, service1__test_method1_on_return, LITTLE_RPC_NULLPTR);
         printf("rpc1 ret: %d\r\n", ret);
     }
     strcpy(c_chr, "Funk");
@@ -58,7 +58,7 @@ int main(void)
     req2.x = 19901;
 
     rpc2.RpcInvoke(LRPC_SERVICE_ID_TEST_SERVICE_1, &testService1.base, "testMethod1",
-                   (ProtobufCMessage *)&req2, service2__test_method2_on_return, nullptr);
+                   (ProtobufCMessage *)&req2, service2__test_method2_on_return, LITTLE_RPC_NULLPTR);
 }
 
 void service1__test_method1_on_return(const ProtobufCMessage *msg, void *closure_data)

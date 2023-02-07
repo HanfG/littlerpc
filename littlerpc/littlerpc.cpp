@@ -4,7 +4,7 @@
 
 #include "littlerpc_def.h"
 
-static int getServiveMethodIndex(const ProtobufCService *service, const char *methodName);
+static int getServiveMethodIndex(const ProtobufCServiceDescriptor *service, const char *methodName);
 static void *little_rpc_alloc(void *allocator_data, size_t size);
 static void little_rpc_free(void *allocator_data, void *pointer);
 static void serviceClosure(const ProtobufCMessage *msg, void *closure_data);
@@ -25,7 +25,7 @@ LittleRPC::LittleRPC(LittleRPCSendBufferCallback sendBufferCallback,
 LittleRPC::~LittleRPC() { LITTLE_RPC_FREE(this->recvBuffer); }
 
 void LittleRPC::setSendBufferCallback(LittleRPCSendBufferCallback sendBufferCallback,
-                                      void *sendBufferCallbackUserData = nullptr)
+                                      void *sendBufferCallbackUserData = LITTLE_RPC_NULLPTR)
 {
     this->sendBufferCallback = sendBufferCallback;
     this->sendBufferCallbackUserData = sendBufferCallbackUserData;
@@ -39,7 +39,7 @@ void LittleRPC::registService(LittleRPCServiceID serviceID, ProtobufCService *se
 
 void LittleRPC::sendBuffer(uint8_t *buff, size_t len)
 {
-    if (this->sendBufferCallback != nullptr)
+    if (this->sendBufferCallback != LITTLE_RPC_NULLPTR)
     {
         this->sendBufferCallback(buff, len, this->sendBufferCallbackUserData);
     }
@@ -74,7 +74,7 @@ void LittleRPC::callService(LittleRPC::LittleRPCHeader_t *header, uint8_t *bodyB
 {
     ProtobufCService *service = this->serviceManager.findServiceByID(header->serviceID);
 
-    if (service == nullptr)
+    if (service == LITTLE_RPC_NULLPTR)
         return;
     if (header->methodIndex >= service->descriptor->n_methods)
         return;
@@ -100,7 +100,7 @@ void LittleRPC::callClosure(LittleRPC::LittleRPCHeader_t *header, uint8_t *bodyB
         return;
     }
     const ProtobufCMessageDescriptor *outputMsgDesc =
-        sc.service->descriptor->methods[header->methodIndex].output;
+        sc.serviceDescriptor->methods[header->methodIndex].output;
 
     ProtobufCMessage *msg =
         protobuf_c_message_unpack(outputMsgDesc, &this->pbcAllocator, buffLen, bodyBuff);
@@ -124,13 +124,13 @@ size_t LittleRPC::onRecv(uint8_t *buff, size_t len)
 }
 
 LittleRPC::RPCInvokeRet_t LittleRPC::RpcInvoke(LittleRPCServiceID serviceID,
-                                               const ProtobufCService *service,
+                                               const ProtobufCServiceDescriptor *serviceDescriptor,
                                                const char *methodName,
                                                const ProtobufCMessage *input,
                                                ProtobufCClosure closure, void *closure_data)
 {
 
-    int methidIndex = getServiveMethodIndex(service, methodName);
+    int methidIndex = getServiveMethodIndex(serviceDescriptor, methodName);
     if (methidIndex < 0)
     {
         return INVOKE_MEHTOD_NO_EXISTS;
@@ -140,15 +140,14 @@ LittleRPC::RPCInvokeRet_t LittleRPC::RpcInvoke(LittleRPCServiceID serviceID,
     uint8_t *bodyBuffer = (uint8_t *)LITTLE_RPC_ALLOC(bodySize);
 
     protobuf_c_message_pack(input, bodyBuffer);
-    LittleRPCHeader_t header = {
-        .seq = this->seqCallbackManager.generateSeq(),
-        .serviceID = serviceID,
-        .msgType = MSG_TYPE_INPUT,
-        .methodIndex = methidIndex,
-        .contentBufferLen = bodySize,
-    };
+    LittleRPCHeader_t header;
+    header.seq = this->seqCallbackManager.generateSeq();
+    header.serviceID = serviceID;
+    header.msgType = MSG_TYPE_INPUT;
+    header.methodIndex = methidIndex;
+    header.contentBufferLen = bodySize;
 
-    if (closure != nullptr && this->seqCallbackManager.pushSeqCallback(header.seq, service, closure,
+    if (closure != LITTLE_RPC_NULLPTR && this->seqCallbackManager.pushSeqCallback(header.seq, serviceDescriptor, closure,
                                                                        closure_data) == false)
     {
         LITTLE_RPC_FREE(bodyBuffer);
@@ -180,11 +179,11 @@ void serviceClosure(const ProtobufCMessage *msg, void *closure_data)
     LITTLE_RPC_FREE(buff);
 }
 
-int getServiveMethodIndex(const ProtobufCService *service, const char *methodName)
+int getServiveMethodIndex(const ProtobufCServiceDescriptor *serviceDescriptor, const char *methodName)
 {
-    for (int i = 0; i < service->descriptor->n_methods; i++)
+    for (int i = 0; i < serviceDescriptor->n_methods; i++)
     {
-        if (0 == strcmp(methodName, service->descriptor->methods[i].name))
+        if (0 == strcmp(methodName, serviceDescriptor->methods[i].name))
         {
             return i;
         }
@@ -194,12 +193,12 @@ int getServiveMethodIndex(const ProtobufCService *service, const char *methodNam
 
 void *little_rpc_alloc(void *allocator_data, size_t size)
 {
-    LittleRPC *rpcHandler = (LittleRPC *)allocator_data;
+    // LittleRPC *rpcHandler = (LittleRPC *)allocator_data;
     return LITTLE_RPC_ALLOC(size);
 }
 
 void little_rpc_free(void *allocator_data, void *pointer)
 {
-    LittleRPC *rpcHandler = (LittleRPC *)allocator_data;
+    // LittleRPC *rpcHandler = (LittleRPC *)allocator_data;
     return LITTLE_RPC_FREE(pointer);
 }

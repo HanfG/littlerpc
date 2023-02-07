@@ -14,6 +14,6 @@
 #define LITTLE_RPC_PENDDING_RPC_NUM 10
 #define LITTLE_RPC_CACHE_SIZE       (16 * 1024)
 
-#define LITTLE_RPC_NULLPTR nullptr
+#define LITTLE_RPC_NULLPTR NULL
 
 #endif

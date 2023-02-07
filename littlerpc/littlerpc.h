@@ -45,8 +45,8 @@ public:
     } RPCInvokeRet_t;
 
 public:
-    LittleRPC(LittleRPCSendBufferCallback sendBufferCallback = nullptr,
-              void *sendBufferCallbackUserData = nullptr);
+    LittleRPC(LittleRPCSendBufferCallback sendBufferCallback = LITTLE_RPC_NULLPTR,
+              void *sendBufferCallbackUserData = LITTLE_RPC_NULLPTR);
     ~LittleRPC();
 
     size_t onRecv(uint8_t *buff, size_t len);
@@ -58,7 +58,7 @@ public:
     /* RPC Server Side*/
     void registService(LittleRPCServiceID serviceID, ProtobufCService *service);
     /* RPC Client Side*/
-    RPCInvokeRet_t RpcInvoke(LittleRPCServiceID serviceID, const ProtobufCService *service,
+    RPCInvokeRet_t RpcInvoke(LittleRPCServiceID serviceID, const ProtobufCServiceDescriptor *service,
                              const char *methodName, const ProtobufCMessage *input,
                              ProtobufCClosure closure, void *closure_data);
 

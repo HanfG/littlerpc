@@ -11,7 +11,7 @@ public:
     typedef struct
     {
         LittleRPCSequence seq;
-        const ProtobufCService *service;
+        const ProtobufCServiceDescriptor *serviceDescriptor;
         ProtobufCClosure closure;
         void *closure_data;
     } SeqCallback;
@@ -21,7 +21,7 @@ public:
     ~LittleRPCSeqCallbackManager(void);
 
     bool popSeqCallbackBySeq(LittleRPCSequence seq, SeqCallback *sc);
-    bool pushSeqCallback(LittleRPCSequence seq, const ProtobufCService *service,
+    bool pushSeqCallback(LittleRPCSequence seq, const ProtobufCServiceDescriptor *serviceDescriptor,
                          ProtobufCClosure closure, void *closure_data);
     LittleRPCSequence generateSeq(void);
 
