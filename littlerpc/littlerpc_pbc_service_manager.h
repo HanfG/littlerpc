@@ -23,14 +23,14 @@ void LittleRPCProtobufCServicerManager_Init(LittleRPCProtobufCServicerManager_t 
 
 void LittleRPCProtobufCServicerManager_Destroy(LittleRPCProtobufCServicerManager_t *handle);
 
-void LittleRPCProtobufCServicerManager_registeService(LittleRPCProtobufCServicerManager_t *handle,
+void LittleRPCProtobufCServicerManager_RegisteService(LittleRPCProtobufCServicerManager_t *handle,
                                                       LittleRPCServiceID serviceID,
                                                       ProtobufCService *service);
 
-void LittleRPCProtobufCServicerManager_unregistService(LittleRPCProtobufCServicerManager_t *handle,
+void LittleRPCProtobufCServicerManager_UnregistService(LittleRPCProtobufCServicerManager_t *handle,
                                                        LittleRPCServiceID serviceID);
 
 ProtobufCService *
-LittleRPCProtobufCServicerManager_findServiceByID(LittleRPCProtobufCServicerManager_t *handle,
+LittleRPCProtobufCServicerManager_FindServiceByID(LittleRPCProtobufCServicerManager_t *handle,
                                                   LittleRPCServiceID serviceID);
 #endif

@@ -25,13 +25,13 @@ typedef struct LittleRPCSeqCallbackManager
 
 void LittleRPCSeqCallbackManager_Init(LittleRPCSeqCallbackManager_t *handle);
 void LittleRPCSeqCallbackManager_Destroy(LittleRPCSeqCallbackManager_t *handle);
-bool LittleRPCSeqCallbackManager_popSeqCallbackBySeq(LittleRPCSeqCallbackManager_t *handle,
+bool LittleRPCSeqCallbackManager_PopSeqCallbackBySeq(LittleRPCSeqCallbackManager_t *handle,
                                                      LittleRPCSequence seq,
                                                      LittleRPCSeqCallback_t *sc);
-bool LittleRPCSeqCallbackManager_pushSeqCallback(
+bool LittleRPCSeqCallbackManager_PushSeqCallback(
     LittleRPCSeqCallbackManager_t *handle, LittleRPCSequence seq,
     const ProtobufCServiceDescriptor *serviceDescriptor, ProtobufCClosure closure,
     void *closure_data);
-LittleRPCSequence LittleRPCSeqCallbackManager_generateSeq(LittleRPCSeqCallbackManager_t *handle);
+LittleRPCSequence LittleRPCSeqCallbackManager_GenerateSeq(LittleRPCSeqCallbackManager_t *handle);
 
 #endif

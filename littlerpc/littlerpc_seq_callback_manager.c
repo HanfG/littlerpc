@@ -15,7 +15,7 @@ void LittleRPCSeqCallbackManager_Destroy(LittleRPCSeqCallbackManager_t *handle)
     LITTLE_RPC_FREE(handle->seqCallbacks);
 }
 
-bool LittleRPCSeqCallbackManager_popSeqCallbackBySeq(LittleRPCSeqCallbackManager_t *handle,
+bool LittleRPCSeqCallbackManager_PopSeqCallbackBySeq(LittleRPCSeqCallbackManager_t *handle,
                                                      LittleRPCSequence seq,
                                                      LittleRPCSeqCallback_t *sc)
 {
@@ -44,7 +44,7 @@ bool LittleRPCSeqCallbackManager_popSeqCallbackBySeq(LittleRPCSeqCallbackManager
     return true;
 }
 
-bool LittleRPCSeqCallbackManager_pushSeqCallback(
+bool LittleRPCSeqCallbackManager_PushSeqCallback(
     LittleRPCSeqCallbackManager_t *handle, LittleRPCSequence seq,
     const ProtobufCServiceDescriptor *serviceDescriptor, ProtobufCClosure closure,
     void *closure_data)
@@ -61,7 +61,7 @@ bool LittleRPCSeqCallbackManager_pushSeqCallback(
     return true;
 }
 
-LittleRPCSequence LittleRPCSeqCallbackManager_generateSeq(LittleRPCSeqCallbackManager_t *handle)
+LittleRPCSequence LittleRPCSeqCallbackManager_GenerateSeq(LittleRPCSeqCallbackManager_t *handle)
 {
     LittleRPCSequence ret = handle->seqCounter;
     handle->seqCounter += 1;

@@ -68,14 +68,14 @@ struct LittleRPC
 void LittleRPC_Init(LittleRPC_t *handle);
 void LittleRPC_Destroy(LittleRPC_t *handle);
 
-size_t LittleRPC_onRecv(LittleRPC_t *handle, uint8_t *buff, size_t len);
+size_t LittleRPC_OnRecv(LittleRPC_t *handle, uint8_t *buff, size_t len);
 
-void LittleRPC_setSendBufferCallback(LittleRPC_t *handle,
+void LittleRPC_SetSendBufferCallback(LittleRPC_t *handle,
                                      LittleRPCSendBufferCallback sendBufferCallback,
                                      void *sendBufferCallbackUserData);
 
 /* RPC Server Side*/
-void LittleRPC_registService(LittleRPC_t *handle, LittleRPCServiceID serviceID,
+void LittleRPC_RegistService(LittleRPC_t *handle, LittleRPCServiceID serviceID,
                              ProtobufCService *service);
 /* RPC Client Side*/
 LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID serviceID,

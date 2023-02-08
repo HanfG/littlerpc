@@ -23,11 +23,11 @@ void LittleRPCProtobufCServicerManager_Destroy(LittleRPCProtobufCServicerManager
     }
 }
 
-void LittleRPCProtobufCServicerManager_registeService(LittleRPCProtobufCServicerManager_t *handle,
+void LittleRPCProtobufCServicerManager_RegisteService(LittleRPCProtobufCServicerManager_t *handle,
                                                       LittleRPCServiceID serviceID,
                                                       ProtobufCService *service)
 {
-    if (LittleRPCProtobufCServicerManager_findServiceByID(handle, serviceID) != LITTLE_RPC_NULLPTR)
+    if (LittleRPCProtobufCServicerManager_FindServiceByID(handle, serviceID) != LITTLE_RPC_NULLPTR)
     {
         return;  // TODO return err
     }
@@ -40,7 +40,7 @@ void LittleRPCProtobufCServicerManager_registeService(LittleRPCProtobufCServicer
     handle->servicesNum++;
 }
 
-void LittleRPCProtobufCServicerManager_unregistService(LittleRPCProtobufCServicerManager_t *handle,
+void LittleRPCProtobufCServicerManager_UnregistService(LittleRPCProtobufCServicerManager_t *handle,
                                                        LittleRPCServiceID serviceID)
 {
     int idx = _getServiceIDIndex(handle, serviceID);
@@ -60,7 +60,7 @@ void LittleRPCProtobufCServicerManager_unregistService(LittleRPCProtobufCService
     }
 }
 
-ProtobufCService *LittleRPCProtobufCServicerManager_findServiceByID(LittleRPCProtobufCServicerManager_t *handle,
+ProtobufCService *LittleRPCProtobufCServicerManager_FindServiceByID(LittleRPCProtobufCServicerManager_t *handle,
                                    LittleRPCServiceID serviceID)
 {
     int idx = _getServiceIDIndex(handle, serviceID);
