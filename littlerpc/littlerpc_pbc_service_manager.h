@@ -6,30 +6,31 @@
 
 #include "littlerpc_def.h"
 
-
-class LittleRPCProtobufCServicerManager
+typedef struct _LittleRPCPBCService
 {
-public:
-    typedef struct
-    {
-        LittleRPCServiceID serviceID;
-        ProtobufCService *service;
-    } PBCService_t;
+    LittleRPCServiceID serviceID;
+    ProtobufCService *service;
+} _LittleRPCPBCService_t;
 
-    LittleRPCProtobufCServicerManager();
-    ~LittleRPCProtobufCServicerManager();
-
-    void registService(LittleRPCServiceID serviceID, ProtobufCService *service);
-    void unregistService(LittleRPCServiceID serviceID);
-    ProtobufCService *findServiceByID(LittleRPCServiceID serviceID);
-
-private:
-    void resizeServiceList(size_t size);
-    int getServiceIDIndex(LittleRPCServiceID serviceID);
-
+typedef struct LittleRPCProtobufCServicerManager
+{
     size_t servicesSize;
     size_t servicesNum;
-    PBCService_t *services;
-};
+    _LittleRPCPBCService_t *services;
+} LittleRPCProtobufCServicerManager_t;
 
+void LittleRPCProtobufCServicerManager_Init(LittleRPCProtobufCServicerManager_t *handle);
+
+void LittleRPCProtobufCServicerManager_Destroy(LittleRPCProtobufCServicerManager_t *handle);
+
+void LittleRPCProtobufCServicerManager_registeService(LittleRPCProtobufCServicerManager_t *handle,
+                                                      LittleRPCServiceID serviceID,
+                                                      ProtobufCService *service);
+
+void LittleRPCProtobufCServicerManager_unregistService(LittleRPCProtobufCServicerManager_t *handle,
+                                                       LittleRPCServiceID serviceID);
+
+ProtobufCService *
+LittleRPCProtobufCServicerManager_findServiceByID(LittleRPCProtobufCServicerManager_t *handle,
+                                                  LittleRPCServiceID serviceID);
 #endif

@@ -10,68 +10,45 @@
 #include "littlerpc_pbc_service_manager.h"
 #include "littlerpc_seq_callback_manager.h"
 
-class LittleRPC
+typedef enum LittleRPCMsgType LittleRPCMsgType_t;
+typedef enum LittleRPCInvokeRet LittleRPCInvokeRet_t;
+
+typedef struct LittleRPC LittleRPC_t;
+typedef struct LittleRPCHeader LittleRPCHeader_t;
+typedef struct LittleRPCClosureContext LittleRPCClosureContext_t;
+
+typedef void (*LittleRPCSendBufferCallback)(uint8_t *buff, size_t len, void *usedData);
+
+enum LittleRPCMsgType
 {
+    LITTLERPC_MSG_TYPE_INPUT = 1,
+    LITTLERPC_MSG_TYPE_OUTPUT = 2,
+};
 
-public:
-    typedef void (*LittleRPCSendBufferCallback)(uint8_t *buff, size_t len, void *usedData);
+enum LittleRPCInvokeRet
+{
+    INVOKE_SUCC = 0,
+    INVOKE_MEHTOD_NO_EXISTS = 1,
+    INVOKE_TOO_MANY_PEDDING_RPC = 2,
+};
 
-    typedef enum
-    {
-        MSG_TYPE_INPUT = 1,
-        MSG_TYPE_OUTPUT = 2,
-    } LittleRPCMsgType_t;
+struct LittleRPCHeader
+{
+    LittleRPCSequence seq;
+    LittleRPCServiceID serviceID;
+    LittleRPCMsgType_t msgType;
+    LittleRPCMethodIndex methodIndex;
+    size_t contentBufferLen;
+};
 
-    typedef struct
-    {
-        LittleRPCSequence seq;
-        LittleRPCServiceID serviceID;
-        LittleRPCMsgType_t msgType;
-        LittleRPCMethodIndex methodIndex;
-        size_t contentBufferLen;
-    } LittleRPCHeader_t;
+struct LittleRPCClosureContext
+{
+    LittleRPC_t *server;
+    LittleRPCHeader_t *reqHeader;
+};
 
-    typedef struct
-    {
-        LittleRPC *server;
-        LittleRPCHeader_t *reqHeader;
-    } ClosureContext_t;
-
-    typedef enum
-    {
-        INVOKE_SUCC = 0,
-        INVOKE_MEHTOD_NO_EXISTS = 1,
-        INVOKE_TOO_MANY_PEDDING_RPC = 2,
-    } RPCInvokeRet_t;
-
-public:
-    LittleRPC(LittleRPCSendBufferCallback sendBufferCallback = LITTLE_RPC_NULLPTR,
-              void *sendBufferCallbackUserData = LITTLE_RPC_NULLPTR);
-    ~LittleRPC();
-
-    size_t onRecv(uint8_t *buff, size_t len);
-    void sendBuffer(uint8_t *buff, size_t len);
-
-    void setSendBufferCallback(LittleRPCSendBufferCallback sendBufferCallback,
-                               void *sendBufferCallbackUserData);
-
-    /* RPC Server Side*/
-    void registService(LittleRPCServiceID serviceID, ProtobufCService *service);
-    /* RPC Client Side*/
-    RPCInvokeRet_t RpcInvoke(LittleRPCServiceID serviceID, const ProtobufCServiceDescriptor *service,
-                             const char *methodName, const ProtobufCMessage *input,
-                             ProtobufCClosure closure, void *closure_data);
-
-private:
-    void processBuffer(void);
-
-    // RPC Server Side
-    void callService(LittleRPCHeader_t *header, uint8_t *bodyBuff, size_t buffLen);
-
-    // RPC Client Side
-    void callClosure(LittleRPCHeader_t *header, uint8_t *bodyBuff, size_t buffLen);
-
-private:
+struct LittleRPC
+{
     ProtobufCAllocator pbcAllocator;
 
     uint8_t *recvBuffer;
@@ -81,10 +58,29 @@ private:
     LittleRPCSendBufferCallback sendBufferCallback;
 
     // RPC Server Side
-    LittleRPCProtobufCServicerManager serviceManager;
+    LittleRPCProtobufCServicerManager_t serviceManager;
 
     /* RPC Client Side */
-    LittleRPCSeqCallbackManager seqCallbackManager;
+    LittleRPCSeqCallbackManager_t seqCallbackManager;
 };
+
+
+void LittleRPC_Init(LittleRPC_t *handle);
+void LittleRPC_Destroy(LittleRPC_t *handle);
+
+size_t LittleRPC_onRecv(LittleRPC_t *handle, uint8_t *buff, size_t len);
+
+void LittleRPC_setSendBufferCallback(LittleRPC_t *handle,
+                                     LittleRPCSendBufferCallback sendBufferCallback,
+                                     void *sendBufferCallbackUserData);
+
+/* RPC Server Side*/
+void LittleRPC_registService(LittleRPC_t *handle, LittleRPCServiceID serviceID,
+                             ProtobufCService *service);
+/* RPC Client Side*/
+LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID serviceID,
+                                         const ProtobufCServiceDescriptor *service,
+                                         const char *methodName, const ProtobufCMessage *input,
+                                         ProtobufCClosure closure, void *closure_data);
 
 #endif
