@@ -1,6 +1,9 @@
 #ifndef __LITTLE_RPC_PBC_SERVICE_MANAGER_H__
 #define __LITTLE_RPC_PBC_SERVICE_MANAGER_H__
 // PBC means Protobuf-C
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 #include "protobuf-c/protobuf-c.h"
 
@@ -33,4 +36,10 @@ void LittleRPCProtobufCServicerManager_UnregistService(LittleRPCProtobufCService
 ProtobufCService *
 LittleRPCProtobufCServicerManager_FindServiceByID(LittleRPCProtobufCServicerManager_t *handle,
                                                   LittleRPCServiceID serviceID);
+
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

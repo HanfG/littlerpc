@@ -1,6 +1,11 @@
 #ifndef __LITTLE_RPC_SVR_H__
 #define __LITTLE_RPC_SVR_H__
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -82,5 +87,10 @@ LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID
                                          const ProtobufCServiceDescriptor *service,
                                          const char *methodName, const ProtobufCMessage *input,
                                          ProtobufCClosure closure, void *closure_data);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

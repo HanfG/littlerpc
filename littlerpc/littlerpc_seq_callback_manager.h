@@ -1,5 +1,8 @@
 #ifndef __LITTLE_RPC_SEQ_CALLBACK_MANAGER_H__
 #define __LITTLE_RPC_SEQ_CALLBACK_MANAGER_H__
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 #include <stdbool.h>
 
@@ -33,5 +36,9 @@ bool LittleRPCSeqCallbackManager_PushSeqCallback(
     const ProtobufCServiceDescriptor *serviceDescriptor, ProtobufCClosure closure,
     void *closure_data);
 LittleRPCSequence LittleRPCSeqCallbackManager_GenerateSeq(LittleRPCSeqCallbackManager_t *handle);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

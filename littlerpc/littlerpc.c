@@ -227,5 +227,5 @@ void *little_rpc_alloc(void *allocator_data, size_t size)
 void little_rpc_free(void *allocator_data, void *pointer)
 {
     // LittleRPC *rpcHandler = (LittleRPC *)allocator_data;
-    return LITTLE_RPC_FREE(pointer);
+    LITTLE_RPC_FREE(pointer);
 }
