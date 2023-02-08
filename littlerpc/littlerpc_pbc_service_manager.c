@@ -85,8 +85,12 @@ int _getServiceIDIndex(LittleRPCProtobufCServicerManager_t *handle, LittleRPCSer
 
 void _resizeServiceList(LittleRPCProtobufCServicerManager_t *handle, size_t size)
 {
+    void *newMem = LITTLE_RPC_ALLOC(sizeof(_LittleRPCPBCService_t) * size);
+    if (!newMem)
+    {
+        return; // XXX return err
+    }
     handle->servicesSize = size;
-    void *newMem = LITTLE_RPC_ALLOC(sizeof(_LittleRPCPBCService_t) * handle->servicesSize);
     if (handle->services != LITTLE_RPC_NULLPTR)
     {
         LITTLE_RPC_MEMCPY(newMem, handle->services, sizeof(_LittleRPCPBCService_t) * handle->servicesNum);

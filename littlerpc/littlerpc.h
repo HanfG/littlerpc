@@ -55,7 +55,7 @@ struct LittleRPCClosureContext
 struct LittleRPC
 {
     ProtobufCAllocator pbcAllocator;
-#if LITTLE_RPC_CACHE_SIZE_INIT_STATIC == 1
+#if LITTLE_RPC_MEM_STATIC == 1
     uint8_t recvBuffer[LITTLE_RPC_CACHE_SIZE];
 #else
     uint8_t *recvBuffer;

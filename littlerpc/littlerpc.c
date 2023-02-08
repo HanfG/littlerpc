@@ -21,7 +21,7 @@ void LittleRPC_Init(LittleRPC_t *handle)
     handle->pbcAllocator.allocator_data = handle;
 
     handle->recvBufferAvailableSize = 0;
-#if LITTLE_RPC_INIT_CACHE_STATIC != 1
+#if LITTLE_RPC_MEM_STATIC != 1
     handle->recvBuffer = (uint8_t *)LITTLE_RPC_ALLOC(LITTLE_RPC_CACHE_SIZE);
 #endif
 
@@ -139,13 +139,13 @@ size_t LittleRPC_OnRecv(LittleRPC_t *handle, uint8_t *buff, size_t len)
     size_t copyLen = len < (LITTLE_RPC_CACHE_SIZE - handle->recvBufferAvailableSize)
                          ? len
                          : (LITTLE_RPC_CACHE_SIZE - handle->recvBufferAvailableSize);
-    size_t shiftLen = len - copyLen;
 
     LITTLE_RPC_MEMCPY(handle->recvBuffer + handle->recvBufferAvailableSize, buff, copyLen);
+
     handle->recvBufferAvailableSize += copyLen;
 
     _processBuffer(handle);
-    return shiftLen;
+    return copyLen;
 }
 
 
@@ -165,7 +165,7 @@ LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID
     uint8_t *bodyBuffer = (uint8_t *)LITTLE_RPC_ALLOC(bodySize);
 
     protobuf_c_message_pack(input, bodyBuffer);
-    LittleRPCHeader_t header;
+    LittleRPCHeader_t header = {0};
 
     header.seq = LittleRPCSeqCallbackManager_GenerateSeq(&handle->seqCallbackManager);
     header.serviceID = serviceID;
