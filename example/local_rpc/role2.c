@@ -17,19 +17,19 @@ void Role2_Init(void)
 {
     LittleRPC_Init(&rpc2);
 
-    LittleRPC_registService(&rpc2, LRPC_SERVICE_ID_TEST_SERVICE_2,
+    LittleRPC_RegistService(&rpc2, LRPC_SERVICE_ID_TEST_SERVICE_2,
                             (ProtobufCService *)&testService2);
 }
 
 size_t Role2_OnRecv(uint8_t *buff, size_t len)
 {
-    LittleRPC_onRecv(&rpc2, buff, len);
+    LittleRPC_OnRecv(&rpc2, buff, len);
 }
 
 void Role2_SetSendCallback(LittleRPCSendBufferCallback sendBufferCallback,
                            void *sendBufferCallbackUserData)
 {
-    LittleRPC_setSendBufferCallback(&rpc2, sendBufferCallback, LITTLE_RPC_NULLPTR);
+    LittleRPC_SetSendBufferCallback(&rpc2, sendBufferCallback, LITTLE_RPC_NULLPTR);
 }
 
 void Role2_InvokeService1Method1(uint32_t x)
