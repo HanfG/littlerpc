@@ -21,7 +21,9 @@ void LittleRPC_Init(LittleRPC_t *handle)
     handle->pbcAllocator.allocator_data = handle;
 
     handle->recvBufferAvailableSize = 0;
+#if LITTLE_RPC_INIT_CACHE_STATIC != 1
     handle->recvBuffer = (uint8_t *)LITTLE_RPC_ALLOC(LITTLE_RPC_CACHE_SIZE);
+#endif
 
     handle->sendBufferCallback = LITTLE_RPC_NULLPTR;
     handle->sendBufferCallbackUserData = LITTLE_RPC_NULLPTR;

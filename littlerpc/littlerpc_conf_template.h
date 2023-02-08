@@ -11,8 +11,9 @@
 #define LITTLE_RPC_CONF_FREE(pointer)           free(pointer)
 #define LITTLE_RPC_CONF_MEMCPY(dest, src, size) memcpy(dest, src, size)
 
-#define LITTLE_RPC_CONF_PENDDING_RPC_NUM 10
-#define LITTLE_RPC_CONF_CACHE_SIZE       (16 * 1024)
+#define LITTLE_RPC_CONF_PENDDING_RPC_NUM  (10)
+#define LITTLE_RPC_CONF_INIT_CACHE_STATIC 1
+#define LITTLE_RPC_CONF_CACHE_SIZE        (16 * 1024)
 
 #define LITTLE_RPC_CONF_NULLPTR NULL
 
