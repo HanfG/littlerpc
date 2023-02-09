@@ -2,7 +2,8 @@
 #define __LITTLE_RPC_PBC_SERVICE_MANAGER_H__
 // PBC means Protobuf-C
 #ifdef __cplusplus
-extern "C"{
+extern "C"
+{
 #endif
 
 #include "protobuf-c/protobuf-c.h"

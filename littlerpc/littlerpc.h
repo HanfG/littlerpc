@@ -2,7 +2,8 @@
 #define __LITTLE_RPC_SVR_H__
 
 #ifdef __cplusplus
-extern "C"{
+extern "C"
+{
 #endif
 
 
@@ -26,8 +27,9 @@ typedef void (*LittleRPCSendBufferCallback)(uint8_t *buff, size_t len, void *use
 
 enum LittleRPCMsgType
 {
-    LITTLERPC_MSG_TYPE_INPUT = 1,
-    LITTLERPC_MSG_TYPE_OUTPUT = 2,
+    LITTLERPC_MSG_TYPE_INPUT = 0x01,
+    LITTLERPC_MSG_TYPE_OUTPUT = 0x02,
+    ___LITTLERPC_MSG_TYPE_MAX___ = 0xFF, // limit in one bytes
 };
 
 enum LittleRPCInvokeRet
@@ -39,6 +41,7 @@ enum LittleRPCInvokeRet
 
 struct LittleRPCHeader
 {
+    uint8_t headerCRC8;
     LittleRPCSequence seq;
     LittleRPCServiceID serviceID;
     LittleRPCMsgType_t msgType;

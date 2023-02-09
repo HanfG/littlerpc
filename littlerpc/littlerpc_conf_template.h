@@ -17,4 +17,6 @@
 
 #define LITTLE_RPC_CONF_NULLPTR NULL
 
-#endif
+#define LITTLE_RPC_CONF_PACK_VERIFY 0
+
+#endif  // ifndef __LITTLE_RPC_CONF_H__
