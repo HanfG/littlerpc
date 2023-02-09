@@ -19,4 +19,24 @@
 
 #define LITTLE_RPC_CONF_PACK_VERIFY 0
 
+#define LITTLE_RPC_CONF_ENABLE_TIMEOUT 1
+
+
+#if LITTLE_RPC_CONF_ENABLE_TIMEOUT == 1
+
+#define LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE  1000
+#define LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE 5000
+
+#define LITTLE_RPC_CONF_TICK_TYPE uint64_t
+
+#include <sys/time.h>
+#define LITTLE_RPC_CONF_TIMEOUT_GET_TICK(pTick) \
+    do                                           \
+    {                                            \
+        struct timeval tv;                       \
+        gettimeofday(&tv, NULL);                 \
+        *pTick = tv.tv_sec * 1000 + tv.tv_usec; \
+    } while (0)
+#endif  // if LITTLE_RPC_CONF_ENABLE_TIMEOUT == 1
+
 #endif  // ifndef __LITTLE_RPC_CONF_H__

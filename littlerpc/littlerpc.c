@@ -88,6 +88,21 @@ void LittleRPC_RegistService(LittleRPC_t *handle, LittleRPCServiceID serviceID,
 
 size_t LittleRPC_OnRecv(LittleRPC_t *handle, uint8_t *buff, size_t len)
 {
+#if LITTLE_RPC_ENABLE_TIMEOUT != 0
+    LittleRPCSeqCallback_t sc;
+    while(LittleRPCSeqCallbackManager_PopTimeoutSeqCallback(&handle->seqCallbackManager, &sc))
+    {
+        sc.callback(INVOKE_RESULT_TIMEOUT, LITTLE_RPC_NULLPTR, sc.user_data);
+    }
+    LITTLE_RPC_TICK_TYPE nowTick = 0;
+    LITTLE_RPC_TIMEOUT_GET_TICK(&nowTick);
+    if (nowTick - handle->lastOnRecvTick > LITTLE_RPC_TIMEOUT_RECV_PACKAGE)
+    {
+        handle->recvBufferAvailableSize = 0; // clear buffer
+    }
+    handle->lastOnRecvTick = nowTick;
+#endif  // if LITTLE_RPC_ENABLE_TIMEOUT != 0
+
     size_t copyLen = len < (LITTLE_RPC_CACHE_SIZE - handle->recvBufferAvailableSize)
                          ? len
                          : (LITTLE_RPC_CACHE_SIZE - handle->recvBufferAvailableSize);
@@ -103,21 +118,21 @@ size_t LittleRPC_OnRecv(LittleRPC_t *handle, uint8_t *buff, size_t len)
 LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID serviceID,
                                          const ProtobufCServiceDescriptor *serviceDescriptor,
                                          const char *methodName, const ProtobufCMessage *input,
-                                         ProtobufCClosure closure, void *closure_data)
+                                         LittleRPCInvokeCallback callback, void *user_data)
 {
 
     int methidIndex = _getServiveMethodIndex(serviceDescriptor, methodName);
     if (methidIndex < 0)
     {
-        return INVOKE_MEHTOD_NO_EXISTS;
+        return INVOKE_RET_MEHTOD_NO_EXISTS;
     }
     LittleRPCSequence seq = LittleRPCSeqCallbackManager_GenerateSeq(&handle->seqCallbackManager);
     
-    if (closure != LITTLE_RPC_NULLPTR && LittleRPCSeqCallbackManager_PushSeqCallback(
+    if (callback != LITTLE_RPC_NULLPTR && LittleRPCSeqCallbackManager_PushSeqCallback(
                                              &handle->seqCallbackManager, seq,
-                                             serviceDescriptor, closure, closure_data) == false)
+                                             serviceDescriptor, callback, user_data) == false)
     {
-        return INVOKE_TOO_MANY_PEDDING_RPC;
+        return INVOKE_RET_TOO_MANY_PEDDING_RPC;
     }
 
     LittleRPCHeader_t header = {0};
@@ -128,7 +143,7 @@ LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID
 
     _sendPackage(handle, &header, input);
 
-    return INVOKE_SUCC;
+    return INVOKE_RET_SUCC;
 }
 
 void _sendBuffer(LittleRPC_t *handle, uint8_t *buff, size_t len)
@@ -216,7 +231,7 @@ void _sendPackage(LittleRPC_t *handle, LittleRPCHeader_t *header, const Protobuf
 #endif
 
     const static uint8_t startFlag[] = {_START_FLAG_0, _START_FLAG_1};
-    _sendBuffer(handle, startFlag, sizeof(startFlag));
+    _sendBuffer(handle, (uint8_t *)startFlag, sizeof(startFlag));
     _sendBuffer(handle, (uint8_t *)header, sizeof(LittleRPCHeader_t));
     _sendBuffer(handle, bodyBuffer, bodySize);
     LITTLE_RPC_FREE(bodyBuffer);
@@ -284,7 +299,7 @@ void _callClosure(LittleRPC_t *handle, LittleRPCHeader_t *header, uint8_t *bodyB
     ProtobufCMessage *msg =
         protobuf_c_message_unpack(outputMsgDesc, &handle->pbcAllocator, buffLen, bodyBuff);
 
-    sc.closure(msg, sc.closure_data);
+    sc.callback(INVOKE_RESULT_FINISH, msg, sc.user_data);
     protobuf_c_message_free_unpacked(msg, &handle->pbcAllocator);
 }
 

@@ -14,7 +14,6 @@ static void sendToRole1(uint8_t *buff, size_t len, void *userData)
 static void sendToRole2(uint8_t *buff, size_t len, void *userData)
 {
     Role2_OnRecv(buff, len);
-
 }
 
 

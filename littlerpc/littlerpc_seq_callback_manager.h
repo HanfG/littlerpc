@@ -14,8 +14,11 @@ typedef struct LittleRPCSeqCallback
 {
     LittleRPCSequence seq;
     const ProtobufCServiceDescriptor *serviceDescriptor;
-    ProtobufCClosure closure;
-    void *closure_data;
+#if LITTLE_RPC_ENABLE_TIMEOUT
+    LITTLE_RPC_TICK_TYPE pushTick;
+#endif  // if LITTLE_RPC_ENABLE_TIMEOUT
+    LittleRPCInvokeCallback callback;
+    void *user_data;
 } LittleRPCSeqCallback_t;
 
 typedef struct LittleRPCSeqCallbackManager
@@ -23,19 +26,26 @@ typedef struct LittleRPCSeqCallbackManager
     LittleRPCSequence seqCounter;
     LittleRPCSeqCallback_t *seqCallbacks;
     size_t seqCallbacksAvailableLen;
-
 } LittleRPCSeqCallbackManager_t;
 
 void LittleRPCSeqCallbackManager_Init(LittleRPCSeqCallbackManager_t *handle);
+
 void LittleRPCSeqCallbackManager_Destroy(LittleRPCSeqCallbackManager_t *handle);
+
 bool LittleRPCSeqCallbackManager_PopSeqCallbackBySeq(LittleRPCSeqCallbackManager_t *handle,
                                                      LittleRPCSequence seq,
                                                      LittleRPCSeqCallback_t *sc);
 bool LittleRPCSeqCallbackManager_PushSeqCallback(
     LittleRPCSeqCallbackManager_t *handle, LittleRPCSequence seq,
-    const ProtobufCServiceDescriptor *serviceDescriptor, ProtobufCClosure closure,
-    void *closure_data);
+    const ProtobufCServiceDescriptor *serviceDescriptor, LittleRPCInvokeCallback callback,
+    void *user_data);
+
 LittleRPCSequence LittleRPCSeqCallbackManager_GenerateSeq(LittleRPCSeqCallbackManager_t *handle);
+
+#if LITTLE_RPC_ENABLE_TIMEOUT
+bool LittleRPCSeqCallbackManager_PopTimeoutSeqCallback(LittleRPCSeqCallbackManager_t *handle,
+                                                       LittleRPCSeqCallback_t *sc);
+#endif  // if LITTLE_RPC_ENABLE_TIMEOUT
 
 #ifdef __cplusplus
 }

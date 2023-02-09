@@ -7,7 +7,8 @@
 static void service2__test_method2(TestService2_Service *service, const TestReq *input,
                                    TestRsp_Closure closure, void *closure_data);
 
-static void service1__test_method1_callback(const ProtobufCMessage *msg, void *closure_data);
+static void service1__test_method1_callback(LittleRPCInvokeResult_t invokeResult,
+                                            const ProtobufCMessage *msg, void *closure_data);
 
 static TestService2_Service testService2 = TEST_SERVICE2__INIT(service2__);
 
@@ -43,12 +44,22 @@ void Role2_InvokeService1Method1(uint32_t x)
                         LITTLE_RPC_NULLPTR);
 }
 
-void service1__test_method1_callback(const ProtobufCMessage *msg, void *closure_data)
+void service1__test_method1_callback(LittleRPCInvokeResult_t invokeResult,
+                                     const ProtobufCMessage *msg, void *closure_data)
 {
     TestRsp *rsp = (TestRsp *)msg;
-    printf("Role2: "
-           "service1 method1 -> rsp retCode: %d\r\n",
-           rsp->retcode);
+    if (invokeResult == INVOKE_RESULT_FINISH)
+    {
+        printf("Role2: "
+               "invokeResult:%d, service1 method1 -> rsp retCode: %d\r\n",
+               invokeResult, rsp->retcode);
+    }
+    else
+    {
+        printf("Role2: "
+               "invokeResult:%d\r\n",
+               invokeResult);
+    }
 }
 
 

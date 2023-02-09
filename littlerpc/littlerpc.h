@@ -6,7 +6,6 @@ extern "C"
 {
 #endif
 
-
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -34,10 +33,12 @@ enum LittleRPCMsgType
 
 enum LittleRPCInvokeRet
 {
-    INVOKE_SUCC = 0,
-    INVOKE_MEHTOD_NO_EXISTS = 1,
-    INVOKE_TOO_MANY_PEDDING_RPC = 2,
+    INVOKE_RET_SUCC = 0,
+    INVOKE_RET_MEHTOD_NO_EXISTS = 1,
+    INVOKE_RET_TOO_MANY_PEDDING_RPC = 2,
 };
+
+
 
 struct LittleRPCHeader
 {
@@ -64,6 +65,9 @@ struct LittleRPC
     uint8_t *recvBuffer;
 #endif
     size_t recvBufferAvailableSize;
+#if LITTLE_RPC_ENABLE_TIMEOUT != 0
+    LITTLE_RPC_TICK_TYPE lastOnRecvTick;
+#endif  // if LITTLE_RPC_ENABLE_TIMEOUT != 0
 
     void *sendBufferCallbackUserData;
     LittleRPCSendBufferCallback sendBufferCallback;
@@ -92,7 +96,7 @@ void LittleRPC_RegistService(LittleRPC_t *handle, LittleRPCServiceID serviceID,
 LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID serviceID,
                                          const ProtobufCServiceDescriptor *service,
                                          const char *methodName, const ProtobufCMessage *input,
-                                         ProtobufCClosure closure, void *closure_data);
+                                         LittleRPCInvokeCallback callback, void *user_data);
 
 
 #ifdef __cplusplus

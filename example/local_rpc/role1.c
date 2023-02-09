@@ -6,7 +6,8 @@
 static void service1__test_method1(TestService1_Service *service, const TestReq *input,
                                    TestRsp_Closure closure, void *closure_data);
 
-static void service2__test_method2_callback(const ProtobufCMessage *msg, void *closure_data);
+static void service2__test_method2_callback(LittleRPCInvokeResult_t invokeResult,
+                                            const ProtobufCMessage *msg, void *closure_data);
 
 static TestService1_Service testService1 = TEST_SERVICE1__INIT(service1__);
 
@@ -24,7 +25,8 @@ size_t Role1_OnRecv(uint8_t *buff, size_t len)
     LittleRPC_OnRecv(&rpc1, buff, len);
 }
 
-void Role1_SetSendCallback(LittleRPCSendBufferCallback sendBufferCallback, void *sendBufferCallbackUserData)
+void Role1_SetSendCallback(LittleRPCSendBufferCallback sendBufferCallback,
+                           void *sendBufferCallbackUserData)
 {
     LittleRPC_SetSendBufferCallback(&rpc1, sendBufferCallback, LITTLE_RPC_NULLPTR);
 }
@@ -52,11 +54,20 @@ static void service1__test_method1(TestService1_Service *service, const TestReq 
     rsp.retcode = 1024;
     closure(&rsp, closure_data);
 }
-
-void service2__test_method2_callback(const ProtobufCMessage *msg, void *closure_data)
+static void service2__test_method2_callback(LittleRPCInvokeResult_t invokeResult,
+                                            const ProtobufCMessage *msg, void *closure_data)
 {
     TestRsp *rsp = (TestRsp *)msg;
-    printf("Role1: "
-           "service2 method2 -> rsp retCode: %d\r\n",
-           rsp->retcode);
+    if (invokeResult == INVOKE_RESULT_FINISH)
+    {
+        printf("Role1: "
+               "invokeResult: %d, service2 method2 -> rsp retCode: %d\r\n",
+               invokeResult, rsp->retcode);
+    }
+    else
+    {
+        printf("Role1: "
+               "invokeResult: %d\r\n",
+               invokeResult);
+    }
 }

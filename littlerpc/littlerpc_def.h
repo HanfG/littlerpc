@@ -12,6 +12,15 @@ typedef uint8_t LittleRPCMessageID;
 typedef uint8_t LittleRPCSequence;
 typedef int LittleRPCMethodIndex;
 
+typedef enum LittleRPCInvokeResult LittleRPCInvokeResult_t;
+enum LittleRPCInvokeResult
+{
+    INVOKE_RESULT_FINISH = 0,
+    INVOKE_RESULT_TIMEOUT = 1,
+};
+typedef void (*LittleRPCInvokeCallback)(LittleRPCInvokeResult_t invokeResult, const ProtobufCMessage *, void *user_data);
+
+
 #ifdef LITTLE_RPC_CONF_ALLOC
 #define LITTLE_RPC_ALLOC(size) LITTLE_RPC_CONF_ALLOC(size)
 #else
@@ -62,5 +71,41 @@ typedef int LittleRPCMethodIndex;
 #else
 #define LITTLE_RPC_PACK_VERIFY 1
 #endif  // ifdef LITTLE_RPC_CONF_PACK_VERIFY
+
+#ifdef LITTLE_RPC_CONF_ENABLE_TIMEOUT
+#define LITTLE_RPC_ENABLE_TIMEOUT LITTLE_RPC_CONF_ENABLE_TIMEOUT
+#else
+#define LITTLE_RPC_ENABLE_TIMEOUT 0
+#endif  // ifdef LITTLE_RPC_CONF_ENABLE_TIMEOUT
+
+
+#if LITTLE_RPC_ENABLE_TIMEOUT != 0
+
+#ifdef LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE
+#define LITTLE_RPC_TIMEOUT_RECV_PACKAGE LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE
+#else
+#define LITTLE_RPC_TIMEOUT_RECV_PACKAGE 1000
+#endif  // ifdef LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE
+
+#ifdef LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
+#define LITTLE_RPC_TIMEOUT_WAIT_RESPONSE LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
+#else
+#define LITTLE_RPC_TIMEOUT_WAIT_RESPONSE 5000
+#endif  // ifdef LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
+
+#ifndef LITTLE_RPC_CONF_TICK_TYPE
+#error "add LITTLE_RPC_CONF_TICK_TYPE to config when enable `TIMEOUT` function"
+#else
+#define LITTLE_RPC_TICK_TYPE LITTLE_RPC_CONF_TICK_TYPE
+#endif  // ifndef LITTLE_RPC_CONF_TICK_TYPE
+
+#ifndef LITTLE_RPC_CONF_TIMEOUT_GET_TICK
+#error "add LITTLE_RPC_CONF_TIMEOUT_GET_TICK to config when enable `TIMEOUT` function"
+#else
+#define LITTLE_RPC_TIMEOUT_GET_TICK(pTick) LITTLE_RPC_CONF_TIMEOUT_GET_TICK(pTick)
+#endif  // ifndef LITTLE_RPC_CONF_TIMEOUT_GET_TICK
+
+#endif  // if LITTLE_RPC_ENABLE_TIMEOUT != 0
+
 
 #endif
