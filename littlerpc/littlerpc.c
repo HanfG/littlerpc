@@ -127,7 +127,7 @@ LittleRPCInvokeRet_t LittleRPC_RpcInvoke(LittleRPC_t *handle, LittleRPCServiceID
         return INVOKE_RET_MEHTOD_NO_EXISTS;
     }
     LittleRPCSequence seq = LittleRPCSeqCallbackManager_GenerateSeq(&handle->seqCallbackManager);
-    
+
     if (callback != LITTLE_RPC_NULLPTR && LittleRPCSeqCallbackManager_PushSeqCallback(
                                              &handle->seqCallbackManager, seq,
                                              serviceDescriptor, callback, user_data) == false)
@@ -168,7 +168,8 @@ void _moveBuffer(LittleRPC_t *handle, size_t moveLen)
 void _stripBuffer(LittleRPC_t *handle)
 {
     size_t startIndex = 0;
-    while (startIndex < handle->recvBufferAvailableSize &&
+    while (handle->recvBufferAvailableSize > _START_FLAG_COUNT && 
+           startIndex < handle->recvBufferAvailableSize &&
            (!_START_FLAG_MATCH(handle->recvBuffer, startIndex)))
     {
         startIndex += 1;
@@ -182,9 +183,9 @@ void _processBuffer(LittleRPC_t *handle)
     LittleRPCHeader_t *header = LITTLE_RPC_NULLPTR;
     do
     {
-        _stripBuffer(handle);
         if (handle->recvBufferAvailableSize < (sizeof(LittleRPCHeader_t) + _START_FLAG_COUNT))
             return;
+        _stripBuffer(handle);
 
         header = (LittleRPCHeader_t *)(handle->recvBuffer + _START_FLAG_COUNT);
 #if LITTLE_RPC_PACK_VERIFY != 0
