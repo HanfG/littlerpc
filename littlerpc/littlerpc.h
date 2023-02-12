@@ -59,11 +59,7 @@ struct LittleRPCClosureContext
 struct LittleRPC
 {
     ProtobufCAllocator pbcAllocator;
-#if LITTLE_RPC_MEM_STATIC == 1
     uint8_t recvBuffer[LITTLE_RPC_CACHE_SIZE];
-#else
-    uint8_t *recvBuffer;
-#endif
     size_t recvBufferAvailableSize;
 #if LITTLE_RPC_ENABLE_TIMEOUT != 0
     LITTLE_RPC_TICK_TYPE lastOnRecvTick;

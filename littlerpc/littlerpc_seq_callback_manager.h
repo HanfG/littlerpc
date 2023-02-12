@@ -24,7 +24,7 @@ typedef struct LittleRPCSeqCallback
 typedef struct LittleRPCSeqCallbackManager
 {
     LittleRPCSequence seqCounter;
-    LittleRPCSeqCallback_t *seqCallbacks;
+    LittleRPCSeqCallback_t seqCallbacks[LITTLE_RPC_PENDDING_RPC_NUM];
     size_t seqCallbacksAvailableLen;
 } LittleRPCSeqCallbackManager_t;
 

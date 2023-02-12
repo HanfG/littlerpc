@@ -11,8 +11,8 @@
 #define LITTLE_RPC_CONF_FREE(pointer)           free(pointer)
 #define LITTLE_RPC_CONF_MEMCPY(dest, src, size) memcpy(dest, src, size)
 
+#define LITTLE_RPC_CONF_MAX_SERVICE_NUM   (8)
 #define LITTLE_RPC_CONF_PENDDING_RPC_NUM  (10)
-#define LITTLE_RPC_CONF_INIT_CACHE_STATIC 1
 #define LITTLE_RPC_CONF_CACHE_SIZE        (16 * 1024)
 
 #define LITTLE_RPC_CONF_NULLPTR NULL
@@ -38,5 +38,12 @@
         *pTick = tv.tv_sec * 1000 + tv.tv_usec; \
     } while (0)
 #endif  // if LITTLE_RPC_CONF_ENABLE_TIMEOUT == 1
+
+#define LITTLE_RPC_CONF_THREAD_SAFE 0
+
+#if LITTLE_RPC_CONF_THREAD_SAFE != 0
+#define LITTLE_RPC_CONF_LOCK_ACQUIRE()  acquire()
+#define LITTLE_RPC_CONF_LOCK_RELEASE(lock)  release(lock)
+#endif  // if LITTLE_RPC_CONF_THREAD_SAFE != 0
 
 #endif  // ifndef __LITTLE_RPC_CONF_H__

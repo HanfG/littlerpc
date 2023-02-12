@@ -53,9 +53,6 @@ void LittleRPC_Init(LittleRPC_t *handle)
     handle->pbcAllocator.allocator_data = handle;
 
     handle->recvBufferAvailableSize = 0;
-#if LITTLE_RPC_MEM_STATIC != 1
-    handle->recvBuffer = (uint8_t *)LITTLE_RPC_ALLOC(LITTLE_RPC_CACHE_SIZE);
-#endif
 
     handle->sendBufferCallback = LITTLE_RPC_NULLPTR;
     handle->sendBufferCallbackUserData = LITTLE_RPC_NULLPTR;
@@ -220,7 +217,6 @@ void _processBuffer(LittleRPC_t *handle)
 
 void _sendPackage(LittleRPC_t *handle, LittleRPCHeader_t *header, const ProtobufCMessage *input)
 {
-
     size_t bodySize = protobuf_c_message_get_packed_size(input);
     uint8_t *bodyBuffer = (uint8_t *)LITTLE_RPC_ALLOC(bodySize);
 
@@ -231,10 +227,16 @@ void _sendPackage(LittleRPC_t *handle, LittleRPCHeader_t *header, const Protobuf
     header->headerCRC8 = _calcHeaderCRC(header);
 #endif
 
+#if LITTLE_RPC_THREAD_SAFE
+    void * lock = LITTLE_RPC_LOCK_ACQUIRE();
+#endif
     const static uint8_t startFlag[] = {_START_FLAG_0, _START_FLAG_1};
     _sendBuffer(handle, (uint8_t *)startFlag, sizeof(startFlag));
     _sendBuffer(handle, (uint8_t *)header, sizeof(LittleRPCHeader_t));
     _sendBuffer(handle, bodyBuffer, bodySize);
+#if LITTLE_RPC_THREAD_SAFE
+    LITTLE_RPC_LOCK_RELEASE(lock);
+#endif
     LITTLE_RPC_FREE(bodyBuffer);
 }
 
@@ -256,7 +258,6 @@ bool _checkHeaderCRC(LittleRPCHeader_t *header)
 {
     return _calcHeaderCRC(header) == header->headerCRC8;
 }
-
 
 void _callService(LittleRPC_t *handle, LittleRPCHeader_t *header, uint8_t *bodyBuff, size_t buffLen)
 {
@@ -299,8 +300,9 @@ void _callClosure(LittleRPC_t *handle, LittleRPCHeader_t *header, uint8_t *bodyB
 
     ProtobufCMessage *msg =
         protobuf_c_message_unpack(outputMsgDesc, &handle->pbcAllocator, buffLen, bodyBuff);
-
-    sc.callback(INVOKE_RESULT_FINISH, msg, sc.user_data);
+    if (sc.callback){
+        sc.callback(INVOKE_RESULT_FINISH, msg, sc.user_data);
+    }
     protobuf_c_message_free_unpacked(msg, &handle->pbcAllocator);
 }
 

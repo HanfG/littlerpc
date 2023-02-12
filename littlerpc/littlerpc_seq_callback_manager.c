@@ -4,16 +4,12 @@ inline bool _popSeqCallbackByIndex(LittleRPCSeqCallbackManager_t *handle, int in
 
 void LittleRPCSeqCallbackManager_Init(LittleRPCSeqCallbackManager_t *handle)
 {
-
     handle->seqCounter = 0;
-    handle->seqCallbacks = (LittleRPCSeqCallback_t *)LITTLE_RPC_ALLOC(
-        sizeof(LittleRPCSeqCallback_t) * LITTLE_RPC_PENDDING_RPC_NUM);
     handle->seqCallbacksAvailableLen = 0;
 }
 
 void LittleRPCSeqCallbackManager_Destroy(LittleRPCSeqCallbackManager_t *handle)
 {
-    LITTLE_RPC_FREE(handle->seqCallbacks);
 }
 
 bool LittleRPCSeqCallbackManager_PopSeqCallbackBySeq(LittleRPCSeqCallbackManager_t *handle,
@@ -54,8 +50,15 @@ bool LittleRPCSeqCallbackManager_PushSeqCallback(
 
 LittleRPCSequence LittleRPCSeqCallbackManager_GenerateSeq(LittleRPCSeqCallbackManager_t *handle)
 {
+    
+#if LITTLE_RPC_THREAD_SAFE
+    void * lock = LITTLE_RPC_LOCK_ACQUIRE();
+#endif
     LittleRPCSequence ret = handle->seqCounter;
     handle->seqCounter += 1;
+#if LITTLE_RPC_THREAD_SAFE
+    LITTLE_RPC_LOCK_RELEASE(lock);
+#endif
     return ret;
 }
 
@@ -77,14 +80,12 @@ bool LittleRPCSeqCallbackManager_PopTimeoutSeqCallback(LittleRPCSeqCallbackManag
         }
     }
     return _popSeqCallbackByIndex(handle, scIndex, sc);
-
 }
 #endif  // if LITTLE_RPC_ENABLE_TIMEOUT
 
 
 bool _popSeqCallbackByIndex(LittleRPCSeqCallbackManager_t *handle, int index, LittleRPCSeqCallback_t *sc)
 {
-    
     if (index < 0)
     {
         return false;
