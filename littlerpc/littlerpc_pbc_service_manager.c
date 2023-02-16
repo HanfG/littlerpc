@@ -13,9 +13,6 @@ void LittleRPCProtobufCServicerManager_Init(LittleRPCProtobufCServicerManager_t*
 
 void LittleRPCProtobufCServicerManager_Destroy(LittleRPCProtobufCServicerManager_t* handle)
 {
-    if (handle->services != LITTLE_RPC_NULLPTR) {
-        LITTLE_RPC_FREE(handle->services);
-    }
 }
 
 int LittleRPCProtobufCServicerManager_RegisteService(LittleRPCProtobufCServicerManager_t* handle,

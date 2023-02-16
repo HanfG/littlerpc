@@ -13,71 +13,68 @@ typedef uint8_t LittleRPCSequence;
 typedef int LittleRPCMethodIndex;
 
 typedef enum LittleRPCInvokeResult LittleRPCInvokeResult_t;
-enum LittleRPCInvokeResult
-{
+enum LittleRPCInvokeResult {
     INVOKE_RESULT_FINISH = 0,
     INVOKE_RESULT_TIMEOUT = 1,
 };
-typedef void (*LittleRPCInvokeCallback)(LittleRPCInvokeResult_t invokeResult, const ProtobufCMessage *, void *user_data);
-
+typedef void (*LittleRPCInvokeCallback)(LittleRPCInvokeResult_t invokeResult, const ProtobufCMessage*, void* user_data);
 
 #ifdef LITTLE_RPC_CONF_ALLOC
 #define LITTLE_RPC_ALLOC(size) LITTLE_RPC_CONF_ALLOC(size)
 #else
 #include <stdlib.h>
 #define LITTLE_RPC_ALLOC(size) malloc(size)
-#endif  // ifdef LITTLE_RPC_CONF_ALLOC
+#endif // ifdef LITTLE_RPC_CONF_ALLOC
 
 #ifdef LITTLE_RPC_CONF_FREE
 #define LITTLE_RPC_FREE(pointer) LITTLE_RPC_CONF_FREE(pointer)
 #else
 #include <stdlib.h>
 #define LITTLE_RPC_FREE(pointer) free(pointer)
-#endif  // ifdef LITTLE_RPC_CONF_FREE
+#endif // ifdef LITTLE_RPC_CONF_FREE
 
 #ifdef LITTLE_RPC_CONF_MEMCPY
 #define LITTLE_RPC_MEMCPY(dest, src, size) LITTLE_RPC_CONF_MEMCPY(dest, src, size)
 #else
 #include <string.h>
 #define LITTLE_RPC_MEMCPY(dest, src, size) memcpy(dest, src, size)
-#endif  // ifdef LITTLE_RPC_CONF_MEMCPY
+#endif // ifdef LITTLE_RPC_CONF_MEMCPY
 
 #ifdef LITTLE_RPC_CONF_MAX_SERVICE_NUM
 #define LITTLE_RPC_MAX_SERVICE_NUM (LITTLE_RPC_CONF_MAX_SERVICE_NUM)
 #else
 #define LITTLE_RPC_MAX_SERVICE_NUM (8)
-#endif  // ifdef LITTLE_RPC_CONF_MAX_SERVICE_NUM
+#endif // ifdef LITTLE_RPC_CONF_MAX_SERVICE_NUM
 
 #ifdef LITTLE_RPC_CONF_PENDDING_RPC_NUM
 #define LITTLE_RPC_PENDDING_RPC_NUM (LITTLE_RPC_CONF_PENDDING_RPC_NUM)
 #else
 #define LITTLE_RPC_PENDDING_RPC_NUM (16)
-#endif  // ifdef LITTLE_RPC_CONF_PENDDING_RPC_NUM
+#endif // ifdef LITTLE_RPC_CONF_PENDDING_RPC_NUM
 
 #ifdef LITTLE_RPC_CONF_CACHE_SIZE
 #define LITTLE_RPC_CACHE_SIZE (LITTLE_RPC_CONF_CACHE_SIZE)
 #else
 #define LITTLE_RPC_CACHE_SIZE (16 * 1024)
-#endif  // ifdef LITTLE_RPC_CONF_CACHE_SIZE
+#endif // ifdef LITTLE_RPC_CONF_CACHE_SIZE
 
 #ifdef LITTLE_RPC_CONF_NULLPTR
 #define LITTLE_RPC_NULLPTR (LITTLE_RPC_CONF_NULLPTR)
 #else
 #define LITTLE_RPC_NULLPTR (NULL)
-#endif  // ifdef LITTLE_RPC_CONF_NULLPTR
+#endif // ifdef LITTLE_RPC_CONF_NULLPTR
 
 #ifdef LITTLE_RPC_CONF_PACK_VERIFY
 #define LITTLE_RPC_PACK_VERIFY LITTLE_RPC_CONF_PACK_VERIFY
 #else
 #define LITTLE_RPC_PACK_VERIFY 1
-#endif  // ifdef LITTLE_RPC_CONF_PACK_VERIFY
+#endif // ifdef LITTLE_RPC_CONF_PACK_VERIFY
 
 #ifdef LITTLE_RPC_CONF_ENABLE_TIMEOUT
 #define LITTLE_RPC_ENABLE_TIMEOUT LITTLE_RPC_CONF_ENABLE_TIMEOUT
 #else
 #define LITTLE_RPC_ENABLE_TIMEOUT 0
-#endif  // ifdef LITTLE_RPC_CONF_ENABLE_TIMEOUT
-
+#endif // ifdef LITTLE_RPC_CONF_ENABLE_TIMEOUT
 
 #if LITTLE_RPC_ENABLE_TIMEOUT != 0
 
@@ -85,28 +82,27 @@ typedef void (*LittleRPCInvokeCallback)(LittleRPCInvokeResult_t invokeResult, co
 #define LITTLE_RPC_TIMEOUT_RECV_PACKAGE LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE
 #else
 #define LITTLE_RPC_TIMEOUT_RECV_PACKAGE 1000
-#endif  // ifdef LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE
+#endif // ifdef LITTLE_RPC_CONF_TIMEOUT_RECV_PACKAGE
 
 #ifdef LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
 #define LITTLE_RPC_TIMEOUT_WAIT_RESPONSE LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
 #else
 #define LITTLE_RPC_TIMEOUT_WAIT_RESPONSE 5000
-#endif  // ifdef LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
+#endif // ifdef LITTLE_RPC_CONF_TIMEOUT_WAIT_RESPONSE
 
 #ifndef LITTLE_RPC_CONF_TICK_TYPE
 #error "add LITTLE_RPC_CONF_TICK_TYPE to config when enable `TIMEOUT` function"
 #else
 #define LITTLE_RPC_TICK_TYPE LITTLE_RPC_CONF_TICK_TYPE
-#endif  // ifndef LITTLE_RPC_CONF_TICK_TYPE
+#endif // ifndef LITTLE_RPC_CONF_TICK_TYPE
 
 #ifndef LITTLE_RPC_CONF_TIMEOUT_GET_TICK
 #error "add LITTLE_RPC_CONF_TIMEOUT_GET_TICK to config when enable `TIMEOUT` function"
 #else
 #define LITTLE_RPC_TIMEOUT_GET_TICK(pTick) LITTLE_RPC_CONF_TIMEOUT_GET_TICK(pTick)
-#endif  // ifndef LITTLE_RPC_CONF_TIMEOUT_GET_TICK
+#endif // ifndef LITTLE_RPC_CONF_TIMEOUT_GET_TICK
 
-#endif  // if LITTLE_RPC_ENABLE_TIMEOUT != 0
-
+#endif // if LITTLE_RPC_ENABLE_TIMEOUT != 0
 
 #ifdef LITTLE_RPC_CONF_THREAD_SAFE
 #define LITTLE_RPC_THREAD_SAFE LITTLE_RPC_CONF_THREAD_SAFE
@@ -119,15 +115,21 @@ typedef void (*LittleRPCInvokeCallback)(LittleRPCInvokeResult_t invokeResult, co
 #ifndef LITTLE_RPC_CONF_LOCK_ACQUIRE
 #error "define LITTLE_RPC_CONF_LOCK_ACQUIRE"
 #else
-#define LITTLE_RPC_LOCK_ACQUIRE()  LITTLE_RPC_CONF_LOCK_ACQUIRE()
-#endif  // ifndef LITTLE_RPC_CONF_LOCK_ACQUIRE
+#define LITTLE_RPC_LOCK_ACQUIRE() LITTLE_RPC_CONF_LOCK_ACQUIRE()
+#endif // ifndef LITTLE_RPC_CONF_LOCK_ACQUIRE
 
 #ifndef LITTLE_RPC_CONF_LOCK_RELEASE
 #error "define LITTLE_RPC_CONF_LOCK_RELEASE"
 #else
-#define LITTLE_RPC_LOCK_RELEASE(lock)  LITTLE_RPC_CONF_LOCK_RELEASE(lock)
-#endif  // ifndef LITTLE_RPC_CONF_LOCK_RELEASE
+#define LITTLE_RPC_LOCK_RELEASE(lock) LITTLE_RPC_CONF_LOCK_RELEASE(lock)
+#endif // ifndef LITTLE_RPC_CONF_LOCK_RELEASE
 
-#endif  // if LITTLE_RPC_THREAD_SAFE != 0
+#endif // if LITTLE_RPC_THREAD_SAFE != 0
+
+#ifndef LITTLE_RPC_CONF_GET_SERVICE_ID
+#error "define LITTLE_RPC_CONF_GET_SERVICE_ID"
+#else
+#define LITTLE_RPC_GET_SERVICE_ID(serviceDesv, pID) LITTLE_RPC_CONF_GET_SERVICE_ID(serviceDesv, pID)
+#endif
 
 #endif
